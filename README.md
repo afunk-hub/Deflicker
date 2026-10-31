@@ -1,43 +1,39 @@
-# Prairie Preludes Time-Lapse Deflicker — Version 1.0.00
+# Prairie Preludes Time-Lapse Deflicker
 
-A GitHub Pages-hosted, local-first browser app for reducing exposure flicker in time-lapse videos. Designed for Android Chrome and other modern browsers.
+A GitHub Pages-hosted, local-first browser app for reducing exposure flicker in time-lapse videos. Built for Android Chrome and other modern browsers.
 
-## Features
+## What it does
 
-- Select a local video and preview the original clip.
-- Process locally in the browser using FFmpeg WebAssembly; the selected video is not uploaded to a server.
-- Choose **Gentle**, **Balanced**, or **Strong** exposure-deflicker settings.
-- Optionally apply experimental temporal color smoothing (may cause motion ghosting).
-- Keep audio when present, choose export quality, monitor progress, preview the result, and download an MP4.
-- No server, account, API key, or app-side 200 MB file cap.
+- Loads a local video and previews it in the browser.
+- Uses FFmpeg WebAssembly locally to run FFmpeg's `deflicker` filter.
+- Offers Gentle / Balanced / Strong filter window presets.
+- Optionally applies a mild temporal blend to reduce some visible color changes. This is experimental and can create ghosting, especially around moving clouds, animals, or tree branches.
+- Exports an MP4 file for local download.
+- Does not upload the selected footage to a server.
 
 ## Important limitations
 
-**Files up to 500 MB are a target, not a guarantee on every Android phone.** Browser-based FFmpeg keeps working data in device memory and may need several times the input file size. Large videos can cause the browser to run out of memory or close the tab. A desktop FFmpeg workflow is more reliable for very large files.
+**A 500 MB file is a target, not a guarantee on every Android phone.** The app does not have a server upload limit, but FFmpeg WebAssembly loads the input and output into browser-managed memory. It can require substantially more memory than the input file size. Some phones may run out of memory or the browser may close the tab. For very large files, a desktop FFmpeg workflow is more reliable.
 
-The main `deflicker` filter reduces temporal frame-luminance variation and may help with exposure flicker and some perceived color pumping. It is not a full white-balance correction system. The optional `tmix` color-smoothing option is experimental and can ghost moving objects. Review the result before keeping it.
+The app's main correction is FFmpeg's `deflicker` filter, designed to reduce temporal frame-luminance variations. It can help with brightness pumping and some perceived exposure-related color changes, but it is not a full white-balance reconstruction system. The optional `tmix` setting smooths adjacent frames and may introduce motion ghosting. Inspect the result before using it.
 
-The first processing run requires an internet connection to load FFmpeg WebAssembly from the unpkg CDN. Your video stays on your device; only the processing code is fetched from the CDN. Offline use is not guaranteed.
+The first launch requires an internet connection to load FFmpeg WebAssembly from the unpkg CDN. After that, browser caching may help, but offline operation is not guaranteed. The app never uploads your video; the CDN only serves the app's processing code.
 
-## Create the GitHub repository and deploy
+## Deploy to GitHub Pages
 
-1. Download and extract this ZIP.
-2. Create a **new, empty GitHub repository** for this app, such as `prairie-preludes-deflicker`.
-3. Upload the **contents of the `prairie-preludes-deflicker` folder** to the repository root. The root should contain `index.html`, `app.js`, `styles.css`, `manifest.webmanifest`, and the `assets` folder. Do not upload only the ZIP file or leave all the files nested in an extra folder.
-4. Open the repository's **Settings → Pages**.
-5. Under **Build and deployment**, choose **Deploy from a branch**, select your default branch (usually `main`) and the `/(root)` folder, then save.
-6. Wait for the deployment to complete, then open the Pages URL shown by GitHub.
-7. In Android Chrome, open the app URL and use Chrome's menu to choose **Install app** or **Add to Home screen** if available.
+1. Create a new GitHub repository, for example `prairie-preludes-deflicker`.
+2. Upload the contents of this folder to the repository root (not the enclosing ZIP folder).
+3. In GitHub, open **Settings → Pages**.
+4. Under **Build and deployment**, choose **Deploy from a branch**.
+5. Select your default branch (usually `main`) and the `/(root)` folder, then save.
+6. Wait for deployment. GitHub will show the public Pages URL in Settings → Pages.
+7. Open that URL in Chrome on Android. Choose **Add to Home screen** from Chrome's menu if you want an app-like shortcut.
 
-### Important: keep the app identity separate
-
-This app's manifest has a dedicated `id` (`./?app=prairie-preludes-deflicker`) and a scope/start URL relative to its own repository path. Keep it deployed at its own repository URL, such as `https://YOUR-USERNAME.github.io/prairie-preludes-deflicker/`. Do not deploy it at the root `https://YOUR-USERNAME.github.io/` if another app already uses that root URL. Separate repositories under one GitHub Pages username can share the same origin but have different paths; that alone should not prevent installation.
-
-If Chrome reports that the app is already installed, first confirm that the correct repository URL is open and that the deployed `manifest.webmanifest` contains the ID above. Check Chrome's installed-app list for an older installation with a similar name before clearing site data.
+No backend, API key, database, or secrets are required.
 
 ## Local testing
 
-Serve the directory over HTTP rather than opening `index.html` as a file, because the app uses JavaScript modules. For example, with Python installed:
+Because `app.js` uses ES modules, serve the directory over HTTP instead of opening `index.html` directly. For example, if Python is installed:
 
 ```bash
 python -m http.server 8000
@@ -47,11 +43,17 @@ Then open `http://localhost:8000`.
 
 ## Privacy
 
-- Source video is read by the browser and processed in local browser memory.
-- No analytics, user accounts, or application server are included.
-- FFmpeg code is loaded from unpkg on first use; the video itself is not sent to unpkg.
-- Preview and download use temporary browser object URLs.
+- Source footage is read by the browser and passed to the local FFmpeg WebAssembly engine.
+- No analytics, accounts, or app server are included.
+- The app downloads the FFmpeg engine from unpkg on first use. Your selected video is not sent to unpkg.
+- The app creates local browser object URLs for preview/download. These are revoked when starting over.
 
 ## License
 
 MIT. See `LICENSE`.
+
+## PWA identity note
+
+This build sets a unique web-app manifest `id` (`./?app=prairie-preludes-deflicker`) so Chrome can distinguish this app from other Prairie Preludes apps hosted in separate repository paths under the same `username.github.io` origin. Keep the repository's own GitHub Pages path as the deployment path; do not publish this app at the root if another app already uses that root URL.
+
+If Chrome still reports that the app is installed, open Chrome's app-management area and check whether an older installation is listed under another name, then reload the deployed site and try again. The shared GitHub Pages domain alone should not prevent separate apps from being installed.
