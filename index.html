@@ -145,6 +145,15 @@
     <span>Prairie Preludes • Time-Lapse Deflicker</span>
     <span>Version 1.0.00 · Private by design · Open source</span>
   </footer>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch((error) => {
+          console.warn("Service worker registration failed:", error);
+        });
+      });
+    }
+  </script>
   <script type="module" src="./app.js"></script>
 </body>
 </html>

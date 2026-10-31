@@ -57,3 +57,8 @@ MIT. See `LICENSE`.
 This build sets a unique web-app manifest `id` (`./?app=prairie-preludes-deflicker`) so Chrome can distinguish this app from other Prairie Preludes apps hosted in separate repository paths under the same `username.github.io` origin. Keep the repository's own GitHub Pages path as the deployment path; do not publish this app at the root if another app already uses that root URL.
 
 If Chrome still reports that the app is installed, open Chrome's app-management area and check whether an older installation is listed under another name, then reload the deployed site and try again. The shared GitHub Pages domain alone should not prevent separate apps from being installed.
+
+
+## Installability diagnostic build (1.0.01)
+
+This build registers `sw.js` for the same-origin app shell. It caches the HTML, CSS, JavaScript module, manifest, and local icons; cross-origin requests such as the FFmpeg CDN are left to the browser. After deploying, open the site in Chrome and allow a few seconds for the service worker to install before trying the app install action again.
