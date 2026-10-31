@@ -62,3 +62,8 @@ If Chrome still reports that the app is installed, open Chrome's app-management 
 ## Installability diagnostic build (1.0.01)
 
 This build registers `sw.js` for the same-origin app shell. It caches the HTML, CSS, JavaScript module, manifest, and local icons; cross-origin requests such as the FFmpeg CDN are left to the browser. After deploying, open the site in Chrome and allow a few seconds for the service worker to install before trying the app install action again.
+
+
+### Version 1.0.02
+
+FFmpeg 0.12.10, FFmpeg core 0.12.6, and FFmpeg util 0.12.1 runtime files are bundled under `vendor/` and loaded from the same origin. This avoids loading the FFmpeg worker module from a third-party CDN.

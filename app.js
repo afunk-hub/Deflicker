@@ -1,5 +1,5 @@
-import { FFmpeg } from "https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js";
-import { toBlobURL } from "https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js";
+import { FFmpeg } from "./vendor/ffmpeg/esm/index.js";
+import { toBlobURL } from "./vendor/util/esm/index.js";
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -106,14 +106,11 @@ async function ensureEngine() {
   ffmpeg.on("progress", ({ progress }) => {
     if (processing && Number.isFinite(progress)) setProgress(8 + Math.max(0, Math.min(0.88, progress)) * 85, "Correcting frames locally…");
   });
-  const base = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
-  const coreURL = await toBlobURL(`${base}/ffmpeg-core.js`, "text/javascript");
-  const wasmURL = await toBlobURL(`${base}/ffmpeg-core.wasm`, "application/wasm");
-  // Serve the essential FFmpeg worker from this app's own origin. The worker
-  // wrapper imports the pinned upstream worker module, avoiding Chrome's
-  // cross-origin Worker constructor rejection for the top-level worker URL.
-  const classWorkerURL = new URL("./ffmpeg-worker.js", window.location.href).href;
-  await ffmpeg.load({ coreURL, wasmURL, classWorkerURL });
+  const corePath = new URL("./vendor/core/ffmpeg-core.js", import.meta.url).href;
+  const wasmPath = new URL("./vendor/core/ffmpeg-core.wasm", import.meta.url).href;
+  const coreURL = await toBlobURL(corePath, "text/javascript");
+  const wasmURL = await toBlobURL(wasmPath, "application/wasm");
+  await ffmpeg.load({ coreURL, wasmURL });
   engineLoaded = true;
 }
 

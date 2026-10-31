@@ -1,10 +1,19 @@
-const CACHE_NAME = "pp-deflicker-shell-workerfix-1";
+const CACHE_NAME = "pp-deflicker-shell-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
-  "./ffmpeg-worker.js",
+  "./vendor/ffmpeg/esm/index.js",
+  "./vendor/ffmpeg/esm/classes.js",
+  "./vendor/ffmpeg/esm/const.js",
+  "./vendor/ffmpeg/esm/errors.js",
+  "./vendor/ffmpeg/esm/utils.js",
+  "./vendor/ffmpeg/esm/worker.js",
+  "./vendor/util/esm/index.js",
+  "./vendor/util/esm/const.js",
+  "./vendor/util/esm/errors.js",
+  "./vendor/util/esm/types.js",
   "./manifest.webmanifest",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
@@ -34,7 +43,7 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Leave cross-origin requests (including the FFmpeg CDN) to the browser.
+  // Leave cross-origin requests to the browser; FFmpeg dependencies are bundled locally.
   if (url.origin !== self.location.origin || request.method !== "GET") return;
 
   // Navigation: try the network first, then use the cached app shell.
