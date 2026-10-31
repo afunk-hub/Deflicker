@@ -1,4 +1,4 @@
-const CACHE_NAME = "pp-deflicker-shell-v2";
+const CACHE_NAME = "pp-deflicker-v1.0.03";
 const APP_SHELL = [
   "./",
   "./index.html",
