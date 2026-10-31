@@ -1,10 +1,10 @@
 {
-  "id": "https://afunk-hub.github.io/Deflicker/?pwa=deflicker-v100",
+  "id": "./?pwa=deflicker-v100",
   "name": "Prairie Preludes Time-Lapse Deflicker",
   "short_name": "PP Deflicker",
   "description": "Local-first time-lapse brightness flicker correction.",
-  "start_url": "https://afunk-hub.github.io/Deflicker/",
-  "scope": "https://afunk-hub.github.io/Deflicker/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#101713",
   "theme_color": "#17221d",
