@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#17221d">
+  <meta name="description" content="Private, local-first time-lapse deflicker for Prairie Preludes.">
+  <meta name="application-name" content="Prairie Preludes Time-Lapse Deflicker">
+  <title>Prairie Preludes — Time-Lapse Deflicker</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">PP</div>
+    <div class="brand-copy">
+      <div class="eyebrow">PRAIRIE PRELUDES</div>
+      <h1>Time-Lapse Deflicker</h1>
+    </div>
+    <span class="local-pill"><span></span> Local processing</span>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="kicker">A small studio for changing light</p>
+      <h2>Keep the sunrise.<br><em>Lose the distracting flicker.</em></h2>
+      <p class="intro-copy">Correct uneven exposure in time-lapse footage right in your browser. Your video is not uploaded to a server.</p>
+    </section>
+
+    <section class="privacy-note" aria-label="Privacy and performance note">
+      <span class="note-icon">◇</span>
+      <div><strong>Your footage stays on this device.</strong><br>
+        Processing runs locally in your browser using FFmpeg WebAssembly. Large videos can use substantial memory; success depends on your phone, browser, codec, and available storage.
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div><span class="step">01</span><h3>Choose your video</h3></div>
+        <span class="muted">MP4, MOV, WebM and other FFmpeg-readable formats</span>
+      </div>
+      <label class="drop-zone" id="dropZone" for="videoInput">
+        <input id="videoInput" type="file" accept="video/*,.mp4,.mov,.m4v,.mkv,.webm">
+        <span class="upload-icon">↑</span>
+        <strong id="filePrompt">Tap to select a time-lapse</strong>
+        <span id="fileSubtext">Choose a video from your phone or files</span>
+        <span class="file-limit">Designed for large files • no app-side 200 MB cap</span>
+      </label>
+      <div id="fileDetails" class="file-details hidden"></div>
+      <div id="inputPreviewWrap" class="preview-wrap hidden">
+        <video id="inputPreview" controls playsinline preload="metadata"></video>
+        <div class="preview-caption">Original clip</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div><span class="step">02</span><h3>Correction settings</h3></div>
+      </div>
+      <div class="setting">
+        <div class="setting-label"><label for="strength">Correction strength</label><output id="strengthLabel">Balanced</output></div>
+        <input id="strength" type="range" min="1" max="3" step="1" value="2">
+        <div class="range-labels"><span>Gentle</span><span>Balanced</span><span>Strong</span></div>
+        <p class="help">Stronger settings average over more neighboring frames. This can reduce flicker more aggressively but may soften genuine rapid lighting changes.</p>
+      </div>
+      <div class="setting">
+        <label class="check-row" for="smoothColor">
+          <input id="smoothColor" type="checkbox">
+          <span><strong>Experimental color smoothing</strong><small>Applies light temporal blending to help mild color jumps. May cause motion ghosting; leave off if moving objects smear.</small></span>
+        </label>
+      </div>
+      <div class="setting">
+        <label class="check-row" for="keepAudio">
+          <input id="keepAudio" type="checkbox" checked>
+          <span><strong>Keep original audio, if present</strong><small>Audio is copied when compatible; otherwise processing may need to be retried without it.</small></span>
+        </label>
+      </div>
+      <details class="advanced">
+        <summary>Advanced export settings</summary>
+        <div class="setting">
+          <label for="quality">Export quality</label>
+          <select id="quality">
+            <option value="18">High quality (larger file)</option>
+            <option value="21" selected>Balanced</option>
+            <option value="24">Smaller file</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label for="outputName">Output filename</label>
+          <input id="outputName" type="text" value="prairie-preludes-deflickered.mp4" maxlength="100">
+        </div>
+      </details>
+      <button id="processBtn" class="primary" disabled><span>✦</span> Correct flicker</button>
+      <p class="help centered">The first run downloads the processing engine into your browser cache. Internet is required for that initial load.</p>
+    </section>
+
+    <section id="progressPanel" class="panel hidden" aria-live="polite">
+      <div class="section-heading">
+        <div><span class="step">03</span><h3 id="progressTitle">Processing video</h3></div>
+        <strong id="progressPercent">0%</strong>
+      </div>
+      <div class="progress-track"><div id="progressBar"></div></div>
+      <p id="progressMessage" class="help">Preparing local processing engine…</p>
+      <div class="progress-actions">
+        <button id="cancelBtn" class="secondary">Stop processing</button>
+      </div>
+      <p class="warning-text">Keep this tab open and prevent your phone from sleeping during processing. Large files may take a long time or exceed available memory on some phones.</p>
+    </section>
+
+    <section id="resultPanel" class="panel hidden">
+      <div class="section-heading">
+        <div><span class="step">04</span><h3>Review your result</h3></div>
+        <span class="success-label">Ready to compare</span>
+      </div>
+      <video id="outputPreview" controls playsinline></video>
+      <div class="result-stats" id="resultStats"></div>
+      <div class="result-actions">
+        <a id="downloadBtn" class="primary download" download="prairie-preludes-deflickered.mp4" href="#">↓ Save corrected video</a>
+        <button id="resetBtn" class="secondary">Start another video</button>
+      </div>
+      <p class="help">Check that the sky still changes naturally and that moving clouds or horses do not look smeared. The experimental color option can create ghosting.</p>
+    </section>
+
+    <section id="errorPanel" class="error-panel hidden" role="alert">
+      <strong>Processing couldn't finish</strong>
+      <p id="errorMessage"></p>
+      <p class="help">Try closing other apps, using a shorter clip, or lowering the clip resolution before processing. The source file is unchanged.</p>
+      <button id="dismissError" class="secondary">Dismiss</button>
+    </section>
+
+    <section class="how-panel">
+      <h3>What this tool can—and can't—do</h3>
+      <ul>
+        <li><strong>Exposure deflicker:</strong> uses FFmpeg's temporal deflicker filter to reduce abrupt frame-luminance variations.</li>
+        <li><strong>Color:</strong> exposure correction may reduce some perceived color pumping, but it cannot perfectly reconstruct changing white balance. Optional temporal blending is experimental and can cause ghosting.</li>
+        <li><strong>Natural sunrise:</strong> gradual brightness changes are intentional. Review the result to make sure the sunrise hasn't been flattened.</li>
+        <li><strong>Big files:</strong> the app does not impose a 200 MB upload cap, but the browser engine keeps working data in device memory. A 500 MB input is not guaranteed to process on every phone.</li>
+      </ul>
+    </section>
+  </main>
+  <footer>
+    <span>Prairie Preludes • Time-Lapse Deflicker</span>
+    <span>Version 1.0.00 · Private by design · Open source</span>
+  </footer>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
