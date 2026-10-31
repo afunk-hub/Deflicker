@@ -109,7 +109,11 @@ async function ensureEngine() {
   const base = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
   const coreURL = await toBlobURL(`${base}/ffmpeg-core.js`, "text/javascript");
   const wasmURL = await toBlobURL(`${base}/ffmpeg-core.wasm`, "application/wasm");
-  await ffmpeg.load({ coreURL, wasmURL });
+  // Serve the essential FFmpeg worker from this app's own origin. The worker
+  // wrapper imports the pinned upstream worker module, avoiding Chrome's
+  // cross-origin Worker constructor rejection for the top-level worker URL.
+  const classWorkerURL = new URL("./ffmpeg-worker.js", window.location.href).href;
+  await ffmpeg.load({ coreURL, wasmURL, classWorkerURL });
   engineLoaded = true;
 }
 

@@ -1,9 +1,10 @@
-const CACHE_NAME = "pp-deflicker-shell-v1";
+const CACHE_NAME = "pp-deflicker-shell-workerfix-1";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./ffmpeg-worker.js",
   "./manifest.webmanifest",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
